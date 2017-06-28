@@ -2,8 +2,8 @@
 
 namespace Enrj\SilexElasticsearchProfiler\Handler;
 
+use Enrj\SilexElasticsearchProfiler\EventDispatcher\ElasticsearchEvent;
 use GuzzleHttp\Ring\Core;
-use M6Web\Bundle\ElasticsearchBundle\EventDispatcher\ElasticsearchEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -72,7 +72,7 @@ class EventHandler
                 $event->setError($response['error']->getMessage());
             }
 
-            $this->eventDispatcher->dispatch('elasticsearch', $event);
+            $eventDispatcher->dispatch('elasticsearch', $event);
 
             return $response;
         };

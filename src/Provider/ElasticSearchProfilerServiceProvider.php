@@ -2,6 +2,7 @@
 
 namespace Enrj\SilexElasticsearchProfiler\Provider;
 
+use Elasticsearch\ClientBuilder;
 use Enrj\SilexElasticsearchProfiler\DataCollector\ElasticsearchDataCollector;
 use Enrj\SilexElasticsearchProfiler\Handler\EventHandler;
 use Pimple\Container;
@@ -13,20 +14,21 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class ElasticSearchProfilerServiceProvider implements ServiceProviderInterface, BootableProviderInterface, EventListenerProviderInterface
 {
+    /**
+     * @var ElasticsearchDataCollector
+     */
+    protected $collector;
+
     public function register(Container $app)
     {
-dump("1");
-        $app['elasticsearch.options']['handler'] = new EventHandler(
-            $app['dispatcher'],
-            isset($app['elasticsearch.options']['handler']) ? $app['elasticsearch.options']['handler'] : ClientBuilder::defaultHandler()
-        );
+        $this->collector = new ElasticsearchDataCollector();
         $app['data_collector.templates'] = $app->extend('data_collector.templates', function ($templates) {
             $templates[] = array('elasticsearch', '@ElasticsearchProfiler/profiler.html.twig');
 
             return $templates;
         });
         $app['data_collector.elasticsearch'] = function () {
-            return new ElasticsearchDataCollector();
+            return $this->collector;
         };
         $app->extend('data_collectors', function ($collectors, $app) {
             $collectors['elasticsearch'] = function ($app) {
@@ -41,7 +43,7 @@ dump("1");
             return $loader;
         });
         $app['elasticsearchprofiler.templates_path'] = function () {
-            return __DIR__.'/res';
+            return __DIR__.'/../../res';
         };
     }
 
@@ -51,6 +53,6 @@ dump("1");
 
     public function subscribe(Container $app, EventDispatcherInterface $dispatcher)
     {
-        //$dispatcher->addSubscriber(new DumpListener($app['var_dumper.cloner'], $app['data_collector.dump']));
+        $dispatcher->addListener('elasticsearch', array($this->collector, 'handleEvent'));
     }
 }

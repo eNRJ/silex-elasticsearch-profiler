@@ -9,8 +9,23 @@
             "email": "jlepeltier@nrj.fr"
         }
     ],
+    "autoload": {
+        "psr-4": { "Enrj\\SilexElasticsearchProfiler\\": "src" }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "PhpGitHooks\\Infrastructure\\Composer\\ConfiguratorScript::buildConfig"
+        ],
+        "post-update-cmd": [
+            "PhpGitHooks\\Infrastructure\\Composer\\ConfiguratorScript::buildConfig"
+        ]
+    },
     "require": {},
     "require-dev": {
         "bruli/php-git-hooks": "4.3.*"
+    },
+    "config": {
+        "bin-dir": "bin",
+        "secure-http": false
     }
 }
