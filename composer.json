@@ -1,0 +1,16 @@
+{
+    "name": "enrj/silex-elasticsearch-profiler",
+    "description": "Silex service provider for elasticsearch request profiling",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jérôme LEPELTIER",
+            "email": "jlepeltier@nrj.fr"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "bruli/php-git-hooks": "4.3.*"
+    }
+}
