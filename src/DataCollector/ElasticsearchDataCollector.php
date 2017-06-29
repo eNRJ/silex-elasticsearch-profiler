@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
- * ElasticsearchDataCollector
+ * ElasticsearchDataCollector.
  */
 class ElasticsearchDataCollector extends DataCollector
 {
@@ -18,26 +18,31 @@ class ElasticsearchDataCollector extends DataCollector
     public function __construct()
     {
         $this->data = [
-            'queries'              => [],
+            'queries' => [],
             'total_execution_time' => 0,
         ];
     }
-
 
     /**
      * @param ElasticsearchEvent $event
      */
     public function handleEvent(ElasticsearchEvent $event)
     {
+        $body = explode("\n", $event->getBody());
+        foreach ($body as $key => &$el) {
+            if (null === $el = json_decode($el)) {
+                unset($body[$el]);
+            }
+        }
         $query = array(
-            'method'      => $event->getMethod(),
-            'uri'         => $event->getUri(),
-            'headers'     => $this->varToString($event->getHeaders()),
+            'method' => $event->getMethod(),
+            'uri' => $event->getUri(),
+            'headers' => $this->varToString($event->getHeaders()),
             'status_code' => $event->getStatusCode(),
-            'duration'    => $event->getDuration(),
-            'took'        => $event->getTook(),
-            'body'        => json_decode($event->getBody()),
-            'error'       => $event->getError(),
+            'duration' => $event->getDuration(),
+            'took' => $event->getTook(),
+            'body' => $body,
+            'error' => $event->getError(),
         );
         $this->data['queries'][] = $query;
         $this->data['total_execution_time'] += $query['duration'];
@@ -59,7 +64,7 @@ class ElasticsearchDataCollector extends DataCollector
     }
 
     /**
-     * Get queries
+     * Get queries.
      *
      * @return array
      */
@@ -69,7 +74,7 @@ class ElasticsearchDataCollector extends DataCollector
     }
 
     /**
-     * Get total execution time
+     * Get total execution time.
      *
      * @return float
      */
@@ -77,5 +82,4 @@ class ElasticsearchDataCollector extends DataCollector
     {
         return $this->data['total_execution_time'];
     }
-
 }
